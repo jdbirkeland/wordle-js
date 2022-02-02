@@ -3879,7 +3879,9 @@ let currentAttempt = '';
 let history = [];
 
 let grid = document.getElementById('grid');
+let keyboard = document.getElementById('keyboard');
 buildGrid();
+buildKeyboard();
 updateGrid();
 window.addEventListener('keydown', handleKeydown);
 
@@ -3986,3 +3988,25 @@ function getBgColor(attempt, i) {
 }
 
 // document.addEventListener('click', updateGrid);
+function buildKeyboard() {
+  buildKeyboardRow( 'qwertyuiop', false);
+  buildKeyboardRow( 'asdfghjkl', false);
+  buildKeyboardRow( 'zxcvbnm', true);
+}
+
+function buildKeyboardRow(letters) {
+  let row = document.createElement('div');
+  // rowDiv.className = 'keyboard-row';
+  for (let letter of letters) {
+    // let letter = row[i];
+    let button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = letter;
+    button.onClick = () => {
+      // currentAttempt += letter;
+    };
+    row.appendChild(button);
+  }
+  keyboard.appendChild(row);
+}
+

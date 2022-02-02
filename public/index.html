@@ -1,11 +1,14 @@
+<div id="screen">
 <h1>Wordle (clone)</h1>
-<hr/>
+<!-- <hr/>
 <h3>PRESS ENTER TO GUESS</h3>
 <div id="alphabet"></div>
 <button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'enter'}));">ENTER</button>
 <button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'backspace'}));">BACKSPACE</button>
-<button style='display: none;' type="button" onclick="javascript:window.location.href = window.location.href;">RESTART THE GAME</button>
+<button style='display: none;' type="button" onclick="javascript:window.location.href = window.location.href;">RESTART THE GAME</button> -->
 <div id="grid"></div>
+<div id="keyboard"></div>
+</div>
 <style>
     body, html {
         background: #111;
@@ -14,13 +17,33 @@
         text-align: center;
         text-transform: uppercase;
       }
-
+body, html, #screen {
+    height: 100%;
+    width: 100%;
+}
+#screen {
+  display: flex;
+  flex-direction: column;
+}
     h1 {
         font-size: 42px;
         margin: 0;
         padding: 0;
       }
-    
+    .button {
+        border-radius: 10px;
+        color: #aaa;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1;
+        margin: 2px;
+        padding: 15px 15px;
+        text-transform: uppercase;
+      }
+      #keyboard {
+       flex: none;
+      }
     .cell {
       width: 60px;
       height: 60px;
