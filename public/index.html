@@ -1,5 +1,10 @@
 <h1>Wordle (clone)</h1>
 <hr/>
+<h3>PRESS ENTER TO GUESS</h3>
+<div id="alphabet"></div>
+<button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'enter'}));">ENTER</button>
+<button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'backspace'}));">BACKSPACE</button>
+<button style='display: none;' type="button" onclick="javascript:window.location.href = window.location.href;">RESTART THE GAME</button>
 <div id="grid"></div>
 <style>
     body, html {
