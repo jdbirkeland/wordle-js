@@ -3872,24 +3872,29 @@ let wordList = [
   'turbo'
 ];
 
-let randomIndex = Math.floor(Math.random() * wordList.length);
-let secret = wordList[randomIndex];
+let secret = wordList[0];
+
+// let randomIndex = Math.floor(Math.random() * wordList.length);
+// let secret = wordList[randomIndex];
 
 let currentAttempt = '';
 let history = [];
-
-let grid = document.getElementById('grid');
-let keyboard = document.getElementById('keyboard');
-buildGrid();
-buildKeyboard();
-updateGrid();
-window.addEventListener('keydown', handleKeydown);
 
 function handleKeydown(e) {
   if (e.ctrlKey || e.altKey || e.metaKey) {
     return;
   }
-  let letter = e.key.toLowerCase();
+  handleKey(e.key);
+}
+
+function handleKey(key) {
+  if (history.length === 6) {
+    return;
+  }
+  if (isAnimating) {
+    return;
+  }
+  let letter = key.toLowerCase();
   if (letter === 'enter') {
     if (currentAttempt.length < 5) {
       return;
@@ -3898,19 +3903,35 @@ function handleKeydown(e) {
       alert('Not a valid word');
       return;
     }
+    if (
+      history.length === 5 &&
+      currentAttempt !== secret
+    ) {
+      alert(secret)
+    }
     history.push(currentAttempt);
     currentAttempt = '';
-    // updateGrid();
+    updateKeyboard();
+    saveGame();
+    pauseInput();
   } else if (letter === 'backspace') {
     currentAttempt = currentAttempt.slice(0, currentAttempt.length - 1);
-    // updateGrid();
-
   } else if (/^[a-z]$/.test(letter)) {
     if (currentAttempt.length < 5) {
       currentAttempt += letter;
+      animatePress(currentAttempt.length - 1);
     }
   }
   updateGrid();
+}
+
+let isAnimating = false;
+function pauseInput() {
+  if (isAnimating) throw Error('this should Never happen');
+  isAnimating = true;
+  setTimeout(() => {
+    isAnimating = false;
+  }, 2000);
 }
 
 function buildGrid() {
@@ -3919,59 +3940,72 @@ function buildGrid() {
     for (let j = 0; j < 5; j++) {
       let cell = document.createElement('div');
       cell.className = 'cell';
-      cell.textContent = '';
+      let front = document.createElement('div');
+      front.className = 'front';
+      let back = document.createElement('div');
+      back.className = 'back';
+      let surface = document.createElement('div');
+      surface.className = 'surface';
+      surface.style.transitionDelay = (j * 300) + 'ms';
+      surface.appendChild(front);
+      surface.appendChild(back);
+      cell.appendChild(surface);
       row.appendChild(cell);
     }
     grid.appendChild(row);
   }
 }
 
-// function updateGrid() {
-//   let cells = document.querySelectorAll('.cell');
-//   for (let i = 0; i < cells.length; i++) {
-//     cells[i].textContent = '';
-//   }
-//   for (let i = 0; i < history.length; i++) {
-//     cells[i].textContent = history[i];
-//   }
-// }
-
 function updateGrid() {
-  let row = grid.firstChild
-  for (let attempt of history) {
-    drawAttempt(row, attempt, false);
-    row = row.nextSibling;
+  for (let i = 0; i < 6; i++) {
+    let row = grid.children[i];
+    if (i < history.length) {
+      drawAttempt(row, history[i], true);
+    } else if (i === history.length) {
+      drawAttempt(row, currentAttempt, false);
+    } else {
+      drawAttempt(row, '', false);
+    }
   }
-  drawAttempt(row, currentAttempt, true);
 }
 
-function drawAttempt(row, attempt, isCurrent) {
+function drawAttempt(row, attempt, solved) {
   for (let i = 0; i < 5; i++) {
     let cell = row.children[i];
+    let surface = cell.firstChild;
+    let front = surface.children[0];
+    let back = surface.children[1];
     if (attempt[i] !== undefined) {
+      front.textContent = attempt[i];
+      back.textContent = attempt[i];
       cell.textContent = attempt[i]
     } else {
-      cell.textContent = '_'
+      front.innerHTML = '<div style="opacity: 0">X</div>';
+      back.innerHTML = '<div style="opacity: 0">X</div>';
+      clearAnimation(cell);
     }
-    if (isCurrent) {
-      cell.style.backgroundColor = '#111';
+    front.style.backgroundColor = BLACK;
+    front.style.borderColor = '';
+    if (attempt[i] !== undefined) {
+      front.style.borderColor = MIDDLEGREY;
+    }
+    back.style.backgroundColor = getBgColor(attempt, i);
+    back.style.borderColor = getBorderColor(attempt, i);
+    if (solved) {
+      cell.classList.add('solved');
     } else {
-      cell.style.backgroundColor = getBgColor(attempt, i);
+      cell.classList.remove('solved');
     }
   }
 }
 
-// function drawCurrentAttempt(row, attempt) {
-//   for (let i = 0; i < 5; i++) {
-//     let cell = row.children[i];
-//     if (attempt[i] !== undefined) {
-//       cell.textContent = attempt[i]
-//     } else {
-//       cell.textContent = ''
-//     }
-//     cell.style.backgroundColor = '#111';
-//   }
-// }
+
+let BLACK = '#111';
+let GREY = '#212121';
+let MIDDLEGREY = '#666';
+let LIGHTGREY = '#888';
+let GREEN = '#538d4e';
+let YELLOW = '#b59f3b';
 
 function getBgColor(attempt, i) {
   let correctLetter = secret[i];
@@ -3979,34 +4013,86 @@ function getBgColor(attempt, i) {
   if (attemptLetter === undefined ||
     secret.indexOf(attemptLetter) === -1
   ) {
-    return;
+    return GREY;
   }
   if (correctLetter === attemptLetter) {
-    return 'green';
+    return GREEN;
   }
-  return 'yellow';
+  return YELLOW;
 }
 
 // document.addEventListener('click', updateGrid);
 function buildKeyboard() {
-  buildKeyboardRow( 'qwertyuiop', false);
-  buildKeyboardRow( 'asdfghjkl', false);
-  buildKeyboardRow( 'zxcvbnm', true);
+  buildKeyboardRow('qwertyuiop', false);
+  buildKeyboardRow('asdfghjkl', false);
+  buildKeyboardRow('zxcvbnm', true);
 }
 
-function buildKeyboardRow(letters) {
+function buildKeyboardRow(letters, isLastRow) {
   let row = document.createElement('div');
-  // rowDiv.className = 'keyboard-row';
+  if (isLastRow) {
+    let button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = 'Enter';
+    button.style.backgroundColor = LIGHTGREY;
+    button.onClick = () => {
+      handleKey('enter');
+    };
+    row.appendChild(button);
+  }
   for (let letter of letters) {
-    // let letter = row[i];
     let button = document.createElement('button');
     button.className = 'button';
     button.textContent = letter;
+    button.style.backgroundColor = LIGHTGREY;
     button.onClick = () => {
-      // currentAttempt += letter;
+      handleKey(letter);
+    };
+    keyboardButtons.set(letter, button);
+    row.appendChild(button);
+  }
+  if (isLastRow) {
+    let button = document.createElement('button');
+    button.className = 'button';
+    button.textContent = 'Backspace';
+    button.style.backgroundColor = LIGHTGREY;
+    button.onClick = () => {
+      handleKey('backspace');
     };
     row.appendChild(button);
   }
   keyboard.appendChild(row);
 }
 
+function getBetterColor(a, b) {
+  if (a === GREEN || b === GREEN) {
+    return GREEN;
+  }
+  if (a === YELLOW || b === YELLOW) {
+    return YELLOW;
+  }
+  return GREY;
+}
+
+function updateKeyboard() {
+  let bestColors = new Map();
+  for (let attempt of history) {
+    for (let i = 0; i < appempt.length; i++) {
+      let color = getBgColor(attempt, i);
+      let key = attempt[i];
+      let bestColor = bestColors.get(key);
+      bestColors.set(key, getBetterColor(color, bestColor));
+    }
+  }
+  for (let [key, button] of keyboardButtons) {
+    button.style.backgroundColor = bestColors.get(key);
+  }
+}
+
+
+let grid = document.getElementById('grid');
+let keyboard = document.getElementById('keyboard');
+buildGrid();
+buildKeyboard();
+updateGrid();
+window.addEventListener('keydown', handleKeydown);

@@ -1,60 +1,69 @@
 <div id="screen">
-<h1>Wordle (clone)</h1>
-<!-- <hr/>
-<h3>PRESS ENTER TO GUESS</h3>
-<div id="alphabet"></div>
-<button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'enter'}));">ENTER</button>
-<button type="button" onclick="javascript:window.dispatchEvent(new KeyboardEvent('keydown',{'key':'backspace'}));">BACKSPACE</button>
-<button style='display: none;' type="button" onclick="javascript:window.location.href = window.location.href;">RESTART THE GAME</button> -->
-<div id="grid"></div>
-<div id="keyboard"></div>
+  <h1>Wordle (clone)</h1>
+  <div id="grid"></div>
+  <div id="keyboard"></div>
 </div>
 <style>
-    body, html {
-        background: #111;
-        color: #aaa;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        text-align: center;
-        text-transform: uppercase;
-      }
-body, html, #screen {
+  body,
+  html {
+    background: #003B6F;
+    color: #aaa;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  body,
+  html,
+  #screen {
     height: 100%;
     width: 100%;
-}
-#screen {
-  display: flex;
-  flex-direction: column;
-}
-    h1 {
-        font-size: 42px;
-        margin: 0;
-        padding: 0;
-      }
-    .button {
-        border-radius: 10px;
-        color: #aaa;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        line-height: 1;
-        margin: 2px;
-        padding: 15px 15px;
-        text-transform: uppercase;
-      }
-      #keyboard {
-       flex: none;
-      }
-    .cell {
-      width: 60px;
-      height: 60px;
-      line-height: 60px;
-      border: 1px solid #aaa;
-      display: inline-block;
-      margin: 10px;
-      font-size: 40px;
-      font-weight: bold;
+  }
 
-    }
+  #screen {
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 42px;
+    margin: 0;
+    padding: 0;
+    flex: none;
+  }
+
+  #grid {
+    flex: auto;
+  }
+
+  .button {
+    border-radius: 8px;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    margin: 3px;
+    padding: 15px 15px;
+    text-transform: uppercase;
+    height: 60px;
+  }
+
+  #keyboard {
+    flex: none;
+    padding: 20px;
+  }
+
+  .cell {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border: 1px solid #aaa;
+    display: inline-block;
+    margin: 10px;
+    font-size: 40px;
+    font-weight: bold;
+
+  }
 </style>
 <script src="../src/index.js"></script>
-
