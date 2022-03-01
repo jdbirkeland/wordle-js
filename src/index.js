@@ -3874,9 +3874,6 @@ let wordList = [
 
 let secret = wordList[0];
 
-// let randomIndex = Math.floor(Math.random() * wordList.length);
-// let secret = wordList[randomIndex];
-
 let currentAttempt = '';
 let history = [];
 
@@ -3978,7 +3975,7 @@ function drawAttempt(row, attempt, solved) {
     if (attempt[i] !== undefined) {
       front.textContent = attempt[i];
       back.textContent = attempt[i];
-      cell.textContent = attempt[i]
+      // cell.textContent = attempt[i]
     } else {
       front.innerHTML = '<div style="opacity: 0">X</div>';
       back.innerHTML = '<div style="opacity: 0">X</div>';
@@ -3990,7 +3987,7 @@ function drawAttempt(row, attempt, solved) {
       front.style.borderColor = MIDDLEGREY;
     }
     back.style.backgroundColor = getBgColor(attempt, i);
-    back.style.borderColor = getBorderColor(attempt, i);
+    back.style.borderColor = getBgColor(attempt, i);
     if (solved) {
       cell.classList.add('solved');
     } else {
@@ -4077,7 +4074,7 @@ function getBetterColor(a, b) {
 function updateKeyboard() {
   let bestColors = new Map();
   for (let attempt of history) {
-    for (let i = 0; i < appempt.length; i++) {
+    for (let i = 0; i < attempt.length; i++) {
       let color = getBgColor(attempt, i);
       let key = attempt[i];
       let bestColor = bestColors.get(key);
@@ -4086,13 +4083,53 @@ function updateKeyboard() {
   }
   for (let [key, button] of keyboardButtons) {
     button.style.backgroundColor = bestColors.get(key);
+    button.style.borderColor = bestColors.get(key);
   }
 }
 
+function animatePress(index) {
+  let rowIndex = history.length;
+  let row = grid.children[rowIndex];
+  let cell = row.children[index];
+  cell.style.animationName = 'press';
+  cell.style.animationDuration = '100ms';
+  cell.style.animationTimingFunction = 'ease-out';
+}
+
+function clearAnimation(cell) {
+  cell.style.animationName = '';
+  cell.style.animationDuration = '';
+  cell.style.animationTimingFunction = '';
+} 
+
+function loadGame() {
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem('data'));
+  } catch { }
+  if (data != null) {
+    if (data.secret === secret) {
+      history = data.history;
+    }
+  }
+}
+
+function saveGame() {
+  let data = JSON.stringify({
+    secret,
+    history
+  });
+  try {
+    localStorage.setItem('data', data);
+  } catch { }
+}
 
 let grid = document.getElementById('grid');
 let keyboard = document.getElementById('keyboard');
+let keyboardButtons = new Map();
+loadGame();
 buildGrid();
 buildKeyboard();
 updateGrid();
+updateKeyboard();
 window.addEventListener('keydown', handleKeydown);
