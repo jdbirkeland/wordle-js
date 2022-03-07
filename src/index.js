@@ -1,3 +1,9 @@
+import * as React from 'react';
+
+console.log(React);
+console.log(<div />);
+
+
 let wordList = [
   'sushi',
   'crabs',
