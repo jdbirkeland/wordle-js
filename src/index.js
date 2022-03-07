@@ -1,6 +1,3 @@
-'use strict'
-
-
 let wordList = [
   'sushi',
   'crabs',
