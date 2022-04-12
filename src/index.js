@@ -1,8 +1,5 @@
-import * as React from 'react';
-
-console.log(React);
-console.log(<div />);
-
+import { render } from 'react-dom'
+import wordle from './wordle.js';
 
 let wordList = [
   'sushi',
